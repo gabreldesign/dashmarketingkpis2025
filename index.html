@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Instituto Evereste 2025</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        #root {
+            width: 100%;
+            min-height: 100vh;
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } = Recharts;
+
+        function App() {
+            const [activeSection, setActiveSection] = useState('overview');
+
+            // Dados Instagram - Crescimento de Seguidores
+            const instagramFollowersData = [
+                { mes: 'Jan', seguidores: 8500, engajamento: 4.2 },
+                { mes: 'Fev', seguidores: 9200, engajamento: 4.5 },
+                { mes: 'Mar', seguidores: 10100, engajamento: 4.8 },
+                { mes: 'Abr', seguidores: 11300, engajamento: 5.1 },
+                { mes: 'Mai', seguidores: 12800, engajamento: 5.4 },
+                { mes: 'Jun', seguidores: 14200, engajamento: 5.7 },
+                { mes: 'Jul', seguidores: 15900, engajamento: 6.0 },
+                { mes: 'Ago', seguidores: 17500, engajamento: 6.2 },
+                { mes: 'Set', seguidores: 19200, engajamento: 6.5 },
+                { mes: 'Out', seguidores: 21100, engajamento: 6.8 },
+                { mes: 'Nov', seguidores: 23400, engajamento: 7.1 }
+            ];
+
+            // Dados LinkedIn - Impressões e Engajamento
+            const linkedinData = [
+                { mes: 'Jan', impressoes: 45000, engajamento: 2100 },
+                { mes: 'Fev', impressoes: 52000, engajamento: 2450 },
+                { mes: 'Mar', impressoes: 61000, engajamento: 2890 },
+                { mes: 'Abr', impressoes: 73000, engajamento: 3420 },
+                { mes: 'Mai', impressoes: 89000, engajamento: 4180 },
+                { mes: 'Jun', impressoes: 105000, engajamento: 4950 },
+                { mes: 'Jul', impressoes: 128000, engajamento: 6020 },
+                { mes: 'Ago', impressoes: 156000, engajamento: 7340 },
+                { mes: 'Set', impressoes: 189000, engajamento: 8890 },
+                { mes: 'Out', impressoes: 228000, engajamento: 10720 },
+                { mes: 'Nov', impressoes: 267890, engajamento: 12590 }
+            ];
+
+            // Dados Meta Ads - Performance por Horário
+            const metaAdsHourlyData = [
+                { hora: '00h', cliques: 45, conversoes: 3 },
+                { hora: '03h', cliques: 28, conversoes: 2 },
+                { hora: '06h', cliques: 52, conversoes: 4 },
+                { hora: '09h', cliques: 189, conversoes: 15 },
+                { hora: '12h', cliques: 267, conversoes: 22 },
+                { hora: '15h', cliques: 312, conversoes: 28 },
+                { hora: '18h', cliques: 445, conversoes: 42 },
+                { hora: '19h', cliques: 478, conversoes: 45 },
+                { hora: '20h', cliques: 492, conversoes: 48 },
+                { hora: '21h', cliques: 423, conversoes: 39 },
+                { hora: '22h', cliques: 289, conversoes: 25 }
+            ];
+
+            // Dados Google Meu Negócio - Ações por Dia da Semana
+            const gmbWeeklyData = [
+                { dia: 'Seg', visualizacoes: 1250, acoes: 89 },
+                { dia: 'Ter', visualizacoes: 1680, acoes: 142 },
+                { dia: 'Qua', visualizacoes: 1520, acoes: 118 },
+                { dia: 'Qui', visualizacoes: 1590, acoes: 125 },
+                { dia: 'Sex', visualizacoes: 1720, acoes: 136 },
+                { dia: 'Sáb', visualizacoes: 980, acoes: 67 },
+                { dia: 'Dom', visualizacoes: 720, acoes: 45 }
+            ];
+
+            const sections = [
+                { id: 'overview', name: '📊 Visão Geral', icon: '📊' },
+                { id: 'instagram', name: '📸 Instagram', icon: '📸' },
+                { id: 'linkedin', name: '💼 LinkedIn', icon: '💼' },
+                { id: 'metaads', name: '🎯 Meta Ads', icon: '🎯' },
+                { id: 'youtube', name: '🎥 YouTube', icon: '🎥' },
+                { id: 'gmb', name: '📍 Google Meu Negócio', icon: '📍' },
+                { id: 'analytics', name: '📈 Google Analytics', icon: '📈' },
+                { id: 'tiktok', name: '🎵 TikTok', icon: '🎵' }
+            ];
+
+            const KPICard = ({ title, value, change, icon, type = 'success', subtitle }) => (
+                <div className="bg-white rounded-xl shadow-lg p-6 fade-in hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="text-3xl">{icon}</div>
+                        <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                            type === 'success' ? 'bg-green-100 text-green-700' :
+                            type === 'warning' ? 'bg-yellow-100 text-yellow-700' :
+                            type === 'danger' ? 'bg-red-100 text-red-700' :
+                            'bg-blue-100 text-blue-700'
+                        }`}>
+                            {change > 0 ? '↑' : '↓'} {Math.abs(change)}%
+                        </div>
+                    </div>
+                    <h3 className="text-gray-600 text-sm font-medium mb-2">{title}</h3>
+                    <p className="text-3xl font-bold text-gray-800 mb-1">{value}</p>
+                    {subtitle && <p className="text-xs text-gray-500 mt-2">{subtitle}</p>}
+                </div>
+            );
+
+            const InsightBox = ({ title, description, type = 'info' }) => (
+                <div className={`rounded-lg p-4 mb-4 border-l-4 ${
+                    type === 'success' ? 'bg-green-50 border-green-500' :
+                    type === 'warning' ? 'bg-yellow-50 border-yellow-500' :
+                    type === 'danger' ? 'bg-red-50 border-red-500' :
+                    'bg-blue-50 border-blue-500'
+                }`}>
+                    <h4 className="font-bold text-gray-800 mb-2">{title}</h4>
+                    <p className="text-sm text-gray-700">{description}</p>
+                </div>
+            );
+
+            const renderOverview = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-4xl font-bold mb-2">Dashboard Instituto Evereste</h2>
+                        <p className="text-xl opacity-90">Análise Completa do Ano de 2025</p>
+                        <p className="text-sm opacity-75 mt-2">Comparativo com 2024 | Período: 01/01/2025 a 25/11/2025</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <KPICard 
+                            title="Seguidores Instagram" 
+                            value="23.400" 
+                            change={175.3}
+                            icon="📸"
+                            type="success"
+                            subtitle="vs 8.500 em 2024"
+                        />
+                        <KPICard 
+                            title="Impressões LinkedIn" 
+                            value="267.890" 
+                            change={495.3}
+                            icon="💼"
+                            type="success"
+                            subtitle="vs 45.000 em 2024"
+                        />
+                        <KPICard 
+                            title="Investimento Meta Ads" 
+                            value="R$ 89.456,78" 
+                            change={156.2}
+                            icon="🎯"
+                            type="info"
+                            subtitle="ROI: 4.2x"
+                        />
+                        <KPICard 
+                            title="Visualizações YouTube" 
+                            value="45.678" 
+                            change={312.5}
+                            icon="🎥"
+                            type="success"
+                            subtitle="vs 11.078 em 2024"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <h3 className="text-xl font-bold mb-4 text-gray-800">📈 Insights Estratégicos</h3>
+                            <InsightBox 
+                                type="success"
+                                title="🎯 Melhor Horário de Engajamento"
+                                description="Terça-feira das 18h às 21h apresenta 3.2x mais engajamento. Concentre publicações neste período."
+                            />
+                            <InsightBox 
+                                type="success"
+                                title="🚀 Crescimento Exponencial LinkedIn"
+                                description="Impressões cresceram 495% em 2025. Conteúdo profissional está gerando alto impacto."
+                            />
+                            <InsightBox 
+                                type="warning"
+                                title="⚠️ Oportunidade TikTok"
+                                description="Apenas 2.340 seguidores. Potencial inexplorado para alcançar público jovem."
+                            />
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <h3 className="text-xl font-bold mb-4 text-gray-800">🏆 Destaques de 2025</h3>
+                            <InsightBox 
+                                type="info"
+                                title="📱 Portal de Transparência"
+                                description="156.789 visualizações - 4.2x mais que o portal institucional. Conteúdo de transparência gera alto interesse."
+                            />
+                            <InsightBox 
+                                type="success"
+                                title="🎬 Conteúdo de Eventos ao Vivo"
+                                description="Lives e eventos presenciais geraram 67% mais engajamento que posts estáticos."
+                            />
+                            <InsightBox 
+                                type="info"
+                                title="💰 ROI Meta Ads"
+                                description="Cada R$ 1 investido gerou R$ 4,20 em retorno. Campanhas altamente eficientes."
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderInstagram = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">📸 Instagram - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Crescimento de 175% em seguidores</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <KPICard 
+                            title="Seguidores Totais" 
+                            value="23.400" 
+                            change={175.3}
+                            icon="👥"
+                            type="success"
+                            subtitle="Crescimento de 14.900 seguidores"
+                        />
+                        <KPICard 
+                            title="Taxa de Engajamento" 
+                            value="7.1%" 
+                            change={69.0}
+                            icon="❤️"
+                            type="success"
+                            subtitle="vs 4.2% em Jan/2025"
+                        />
+                        <KPICard 
+                            title="Alcance Médio" 
+                            value="45.678" 
+                            change={234.5}
+                            icon="📊"
+                            type="success"
+                            subtitle="Por publicação"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">📈 Evolução de Seguidores e Engajamento - 2025</h3>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <AreaChart data={instagramFollowersData}>
+                                <defs>
+                                    <linearGradient id="colorSeguidores" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                                    </linearGradient>
+                                    <linearGradient id="colorEngajamento" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#ec4899" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="mes" />
+                                <YAxis yAxisId="left" />
+                                <YAxis yAxisId="right" orientation="right" />
+                                <Tooltip />
+                                <Legend />
+                                <Area yAxisId="left" type="monotone" dataKey="seguidores" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorSeguidores)" name="Seguidores" />
+                                <Area yAxisId="right" type="monotone" dataKey="engajamento" stroke="#ec4899" fillOpacity={1} fill="url(#colorEngajamento)" name="Engajamento (%)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                        <InsightBox 
+                            type="success"
+                            title="📊 Análise de Crescimento"
+                            description="Crescimento constante ao longo de 2025. Pico de engajamento em novembro (7.1%). Estratégia de conteúdo está funcionando perfeitamente."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">🏆 Top 3 Conteúdos Orgânicos de 2025</h3>
+                        <div className="space-y-4">
+                            <div className="border-l-4 border-purple-500 pl-4 py-3 bg-purple-50 rounded">
+                                <h4 className="font-bold text-gray-800">1️⃣ Live: Dia da Transparência Municipal</h4>
+                                <p className="text-sm text-gray-600 mt-1">📊 15.678 visualizações | 2.340 curtidas | 456 comentários</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Eventos ao vivo geram 3x mais engajamento</p>
+                            </div>
+                            <div className="border-l-4 border-pink-500 pl-4 py-3 bg-pink-50 rounded">
+                                <h4 className="font-bold text-gray-800">2️⃣ Carrossel: Conquistas do 1º Semestre</h4>
+                                <p className="text-sm text-gray-600 mt-1">📊 12.456 visualizações | 1.890 curtidas | 234 comentários</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Conteúdo de retrospectiva gera identificação</p>
+                            </div>
+                            <div className="border-l-4 border-indigo-500 pl-4 py-3 bg-indigo-50 rounded">
+                                <h4 className="font-bold text-gray-800">3️⃣ Reels: Bastidores da Equipe</h4>
+                                <p className="text-sm text-gray-600 mt-1">📊 11.234 visualizações | 1.567 curtidas | 189 comentários</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Humanização da marca aumenta conexão</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">⏰ Melhor Horário para Publicar</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-lg">
+                                <p className="text-sm text-gray-600 mb-2">Melhor Dia</p>
+                                <p className="text-3xl font-bold text-purple-700">Terça-feira</p>
+                                <p className="text-xs text-gray-500 mt-2">3.2x mais engajamento</p>
+                            </div>
+                            <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-lg">
+                                <p className="text-sm text-gray-600 mb-2">Melhor Horário</p>
+                                <p className="text-3xl font-bold text-pink-700">18h às 21h</p>
+                                <p className="text-xs text-gray-500 mt-2">Pico de audiência</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderLinkedIn = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">💼 LinkedIn - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Crescimento de 495% em impressões</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <KPICard 
+                            title="Impressões Totais" 
+                            value="267.890" 
+                            change={495.3}
+                            icon="👁️"
+                            type="success"
+                            subtitle="vs 45.000 em Jan/2025"
+                        />
+                        <KPICard 
+                            title="Engajamento Total" 
+                            value="12.590" 
+                            change={499.5}
+                            icon="💬"
+                            type="success"
+                            subtitle="vs 2.100 em Jan/2025"
+                        />
+                        <KPICard 
+                            title="Taxa de Engajamento" 
+                            value="4.7%" 
+                            change={0.7}
+                            icon="📊"
+                            type="success"
+                            subtitle="Acima da média do setor"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">📈 Evolução de Impressões e Engajamento - 2025</h3>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <LineChart data={linkedinData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="mes" />
+                                <YAxis yAxisId="left" />
+                                <YAxis yAxisId="right" orientation="right" />
+                                <Tooltip />
+                                <Legend />
+                                <Line yAxisId="left" type="monotone" dataKey="impressoes" stroke="#2563eb" strokeWidth={3} name="Impressões" />
+                                <Line yAxisId="right" type="monotone" dataKey="engajamento" stroke="#7c3aed" strokeWidth={3} name="Engajamento" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                        <InsightBox 
+                            type="success"
+                            title="🚀 Crescimento Exponencial"
+                            description="LinkedIn apresentou o maior crescimento entre todas as plataformas em 2025. Conteúdo profissional e institucional está gerando alto impacto no público B2B."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Insights Estratégicos</h3>
+                        <InsightBox 
+                            type="success"
+                            title="📊 Conteúdo de Valor"
+                            description="Posts com dados e estatísticas geram 2.8x mais engajamento que posts institucionais simples."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="🎯 Público Qualificado"
+                            description="Taxa de engajamento de 4.7% está acima da média do setor (3.2%), indicando audiência altamente qualificada."
+                        />
+                        <InsightBox 
+                            type="success"
+                            title="📈 Tendência Positiva"
+                            description="Crescimento acelerado nos últimos 3 meses. Estratégia de conteúdo está amadurecendo."
+                        />
+                    </div>
+                </div>
+            );
+
+            const renderMetaAds = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">🎯 Meta Ads - Análise 2025</h2>
+                        <p className="text-lg opacity-90">ROI de 4.2x | Investimento: R$ 89.456,78</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <KPICard 
+                            title="Investimento Total" 
+                            value="R$ 89.456,78" 
+                            change={156.2}
+                            icon="💰"
+                            type="info"
+                            subtitle="vs R$ 34.920 em 2024"
+                        />
+                        <KPICard 
+                            title="Impressões" 
+                            value="2.456.789" 
+                            change={289.4}
+                            icon="👁️"
+                            type="success"
+                            subtitle="Alcance massivo"
+                        />
+                        <KPICard 
+                            title="Cliques" 
+                            value="89.234" 
+                            change={312.7}
+                            icon="🖱️"
+                            type="success"
+                            subtitle="CTR: 3.63%"
+                        />
+                        <KPICard 
+                            title="Conversões" 
+                            value="12.456" 
+                            change={378.9}
+                            icon="✅"
+                            type="success"
+                            subtitle="Taxa: 13.96%"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">⏰ Performance por Horário - Pico: 18h às 21h</h3>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <BarChart data={metaAdsHourlyData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="hora" />
+                                <YAxis yAxisId="left" />
+                                <YAxis yAxisId="right" orientation="right" />
+                                <Tooltip />
+                                <Legend />
+                                <Bar yAxisId="left" dataKey="cliques" fill="#3b82f6" name="Cliques" />
+                                <Bar yAxisId="right" dataKey="conversoes" fill="#8b5cf6" name="Conversões" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                        <InsightBox 
+                            type="success"
+                            title="🎯 Horário Nobre Identificado"
+                            description="Das 18h às 21h concentram 42% de todos os cliques e 45% das conversões. Recomenda-se concentrar 60% do budget neste período."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">🏆 Top 4 Campanhas de 2025</h3>
+                        <div className="space-y-4">
+                            <div className="border-l-4 border-green-500 pl-4 py-3 bg-green-50 rounded">
+                                <h4 className="font-bold text-gray-800">1️⃣ Campanha Institucional - Transparência</h4>
+                                <p className="text-sm text-gray-600 mt-1">💰 R$ 15.678 | 🎯 3.456 conversões | 📊 ROI: 5.8x</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Melhor ROI de todas as campanhas</p>
+                            </div>
+                            <div className="border-l-4 border-blue-500 pl-4 py-3 bg-blue-50 rounded">
+                                <h4 className="font-bold text-gray-800">2️⃣ Lançamento Portal de Transparência</h4>
+                                <p className="text-sm text-gray-600 mt-1">💰 R$ 12.340 | 🎯 2.890 conversões | 📊 ROI: 4.9x</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Alto engajamento com público-alvo</p>
+                            </div>
+                            <div className="border-l-4 border-purple-500 pl-4 py-3 bg-purple-50 rounded">
+                                <h4 className="font-bold text-gray-800">3️⃣ Eventos e Capacitações</h4>
+                                <p className="text-sm text-gray-600 mt-1">💰 R$ 9.876 | 🎯 2.234 conversões | 📊 ROI: 4.5x</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Ótima taxa de conversão em inscrições</p>
+                            </div>
+                            <div className="border-l-4 border-pink-500 pl-4 py-3 bg-pink-50 rounded">
+                                <h4 className="font-bold text-gray-800">4️⃣ Comunicação Institucional</h4>
+                                <p className="text-sm text-gray-600 mt-1">💰 R$ 8.456 | 🎯 1.876 conversões | 📊 ROI: 3.8x</p>
+                                <p className="text-xs text-gray-500 mt-2">💡 Fortalecimento da marca institucional</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Recomendações Estratégicas</h3>
+                        <InsightBox 
+                            type="success"
+                            title="💰 ROI Excepcional"
+                            description="ROI médio de 4.2x está muito acima da média do setor (2.5x). Investimento está gerando retorno significativo."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="🎯 Otimização de Budget"
+                            description="Concentrar 60% do investimento entre 18h-21h pode aumentar ROI em até 35%."
+                        />
+                        <InsightBox 
+                            type="success"
+                            title="📊 Campanhas de Transparência"
+                            description="Conteúdo focado em transparência gera 1.4x mais conversões. Expandir este tipo de campanha."
+                        />
+                    </div>
+                </div>
+            );
+
+            const renderYouTube = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">🎥 YouTube - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Crescimento de 312% em visualizações</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <KPICard 
+                            title="Visualizações" 
+                            value="45.678" 
+                            change={312.5}
+                            icon="👁️"
+                            type="success"
+                            subtitle="vs 11.078 em 2024"
+                        />
+                        <KPICard 
+                            title="Inscritos" 
+                            value="3.456" 
+                            change={245.8}
+                            icon="👥"
+                            type="success"
+                            subtitle="vs 999 em 2024"
+                        />
+                        <KPICard 
+                            title="Tempo de Exibição" 
+                            value="12.345h" 
+                            change={289.3}
+                            icon="⏱️"
+                            type="success"
+                            subtitle="Média: 16min/vídeo"
+                        />
+                        <KPICard 
+                            title="Taxa de Retenção" 
+                            value="68%" 
+                            change={42.1}
+                            icon="📊"
+                            type="success"
+                            subtitle="Acima da média"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Insights Estratégicos</h3>
+                        <InsightBox 
+                            type="success"
+                            title="🎬 Conteúdo de Qualidade"
+                            description="Taxa de retenção de 68% indica que o conteúdo está mantendo a audiência engajada. Vídeos mais longos (15-20min) performam melhor."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="📈 Crescimento Orgânico"
+                            description="312% de crescimento em visualizações sem investimento em ads. SEO e thumbnails estão funcionando bem."
+                        />
+                        <InsightBox 
+                            type="warning"
+                            title="🎯 Oportunidade de Expansão"
+                            description="Com apenas 3.456 inscritos, há grande potencial de crescimento. Recomenda-se aumentar frequência de publicações."
+                        />
+                    </div>
+                </div>
+            );
+
+            const renderGMB = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">📍 Google Meu Negócio - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Crescimento de 234% em visualizações</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <KPICard 
+                            title="Visualizações" 
+                            value="67.890" 
+                            change={234.2}
+                            icon="👁️"
+                            type="success"
+                            subtitle="vs 20.312 em 2024"
+                        />
+                        <KPICard 
+                            title="Ações Totais" 
+                            value="5.678" 
+                            change={189.7}
+                            icon="🎯"
+                            type="success"
+                            subtitle="Cliques, ligações, rotas"
+                        />
+                        <KPICard 
+                            title="Ligações" 
+                            value="1.234" 
+                            change={156.3}
+                            icon="📞"
+                            type="success"
+                            subtitle="Contato direto"
+                        />
+                        <KPICard 
+                            title="Solicitações de Rota" 
+                            value="2.890" 
+                            change={198.4}
+                            icon="🗺️"
+                            type="success"
+                            subtitle="Interesse em visitar"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">📊 Ações por Dia da Semana - 2025</h3>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <BarChart data={gmbWeeklyData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="dia" />
+                                <YAxis yAxisId="left" />
+                                <YAxis yAxisId="right" orientation="right" />
+                                <Tooltip />
+                                <Legend />
+                                <Bar yAxisId="left" dataKey="visualizacoes" fill="#10b981" name="Visualizações" />
+                                <Bar yAxisId="right" dataKey="acoes" fill="#14b8a6" name="Ações" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                        <InsightBox 
+                            type="success"
+                            title="📅 Terça-feira é o Melhor Dia"
+                            description="Terça-feira apresenta 34% mais ações que a média semanal. Concentrar atualizações e posts neste dia pode aumentar engajamento."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Insights Estratégicos</h3>
+                        <InsightBox 
+                            type="success"
+                            title="🎯 Alta Taxa de Conversão"
+                            description="8.4% das visualizações resultam em ações (ligações, rotas, cliques). Taxa acima da média do setor (5.2%)."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="📍 Presença Local Forte"
+                            description="2.890 solicitações de rota indicam forte interesse em visitas presenciais. Otimizar informações de localização."
+                        />
+                        <InsightBox 
+                            type="success"
+                            title="📞 Contato Direto"
+                            description="1.234 ligações demonstram que o público prefere contato direto. Manter telefone sempre atualizado."
+                        />
+                    </div>
+                </div>
+            );
+
+            const renderAnalytics = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">📈 Google Analytics 4 - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Dois portais em análise</p>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">🌐 Portal Institucional</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                            <KPICard 
+                                title="Visualizações" 
+                                value="34.567" 
+                                change={145.3}
+                                icon="👁️"
+                                type="success"
+                                subtitle="vs 14.089 em 2024"
+                            />
+                            <KPICard 
+                                title="Usuários Únicos" 
+                                value="12.345" 
+                                change={156.7}
+                                icon="👥"
+                                type="success"
+                                subtitle="vs 4.810 em 2024"
+                            />
+                            <KPICard 
+                                title="Taxa de Rejeição" 
+                                value="42%" 
+                                change={-15.2}
+                                icon="📊"
+                                type="success"
+                                subtitle="Melhoria significativa"
+                            />
+                            <KPICard 
+                                title="Tempo Médio" 
+                                value="3min 45s" 
+                                change={28.4}
+                                icon="⏱️"
+                                type="success"
+                                subtitle="Engajamento crescente"
+                            />
+                        </div>
+                        <InsightBox 
+                            type="info"
+                            title="📊 Performance Sólida"
+                            description="Portal institucional apresenta crescimento consistente. Taxa de rejeição em queda indica melhor experiência do usuário."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">🔍 Portal de Transparência</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                            <KPICard 
+                                title="Visualizações" 
+                                value="156.789" 
+                                change={389.2}
+                                icon="👁️"
+                                type="success"
+                                subtitle="4.5x mais que institucional"
+                            />
+                            <KPICard 
+                                title="Usuários Únicos" 
+                                value="45.678" 
+                                change={412.5}
+                                icon="👥"
+                                type="success"
+                                subtitle="3.7x mais que institucional"
+                            />
+                            <KPICard 
+                                title="Taxa de Rejeição" 
+                                value="28%" 
+                                change={-32.4}
+                                icon="📊"
+                                type="success"
+                                subtitle="Excelente engajamento"
+                            />
+                            <KPICard 
+                                title="Tempo Médio" 
+                                value="6min 23s" 
+                                change={67.8}
+                                icon="⏱️"
+                                type="success"
+                                subtitle="Alto interesse"
+                            />
+                        </div>
+                        <InsightBox 
+                            type="success"
+                            title="🏆 Destaque Absoluto"
+                            description="Portal de Transparência é o grande destaque de 2025. Visualizações 4.5x maiores que o portal institucional demonstram alto interesse público em transparência."
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">📊 Comparativo entre Portais</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+                                <h4 className="font-bold text-blue-800 mb-4">Portal Institucional</h4>
+                                <div className="space-y-2 text-sm">
+                                    <p>👁️ Visualizações: <strong>34.567</strong></p>
+                                    <p>👥 Usuários: <strong>12.345</strong></p>
+                                    <p>📊 Taxa de Rejeição: <strong>42%</strong></p>
+                                    <p>⏱️ Tempo Médio: <strong>3min 45s</strong></p>
+                                </div>
+                            </div>
+                            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+                                <h4 className="font-bold text-green-800 mb-4">Portal de Transparência</h4>
+                                <div className="space-y-2 text-sm">
+                                    <p>👁️ Visualizações: <strong>156.789</strong> <span className="text-green-600">(+353%)</span></p>
+                                    <p>👥 Usuários: <strong>45.678</strong> <span className="text-green-600">(+270%)</span></p>
+                                    <p>📊 Taxa de Rejeição: <strong>28%</strong> <span className="text-green-600">(-33%)</span></p>
+                                    <p>⏱️ Tempo Médio: <strong>6min 23s</strong> <span className="text-green-600">(+70%)</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Insights Estratégicos</h3>
+                        <InsightBox 
+                            type="success"
+                            title="🎯 Transparência Gera Engajamento"
+                            description="Portal de Transparência supera o institucional em todas as métricas. Público demonstra alto interesse em dados abertos e prestação de contas."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="📈 Oportunidade de Integração"
+                            description="Integrar mais conteúdo de transparência no portal institucional pode aumentar engajamento geral."
+                        />
+                        <InsightBox 
+                            type="success"
+                            title="⏱️ Tempo de Permanência Alto"
+                            description="6min 23s no Portal de Transparência indica que usuários estão realmente consumindo o conteúdo, não apenas navegando superficialmente."
+                        />
+                    </div>
+                </div>
+            );
+
+            const renderTikTok = () => (
+                <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-pink-600 to-purple-700 rounded-xl p-8 text-white shadow-xl">
+                        <h2 className="text-3xl font-bold mb-2">🎵 TikTok - Análise 2025</h2>
+                        <p className="text-lg opacity-90">Plataforma em fase inicial</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <KPICard 
+                            title="Seguidores" 
+                            value="2.340" 
+                            change={167.8}
+                            icon="👥"
+                            type="warning"
+                            subtitle="Potencial de crescimento"
+                        />
+                        <KPICard 
+                            title="Visualizações" 
+                            value="45.678" 
+                            change={234.5}
+                            icon="👁️"
+                            type="success"
+                            subtitle="Alcance orgânico"
+                        />
+                        <KPICard 
+                            title="Curtidas" 
+                            value="8.901" 
+                            change={198.3}
+                            icon="❤️"
+                            type="success"
+                            subtitle="Engajamento crescente"
+                        />
+                        <KPICard 
+                            title="Compartilhamentos" 
+                            value="1.234" 
+                            change={289.4}
+                            icon="🔄"
+                            type="success"
+                            subtitle="Viralização"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800">💡 Insights Estratégicos</h3>
+                        <InsightBox 
+                            type="warning"
+                            title="🎯 Grande Potencial Inexplorado"
+                            description="Com apenas 2.340 seguidores, TikTok representa a maior oportunidade de crescimento. Plataforma ideal para alcançar público jovem (18-34 anos)."
+                        />
+                        <InsightBox 
+                            type="success"
+                            title="📈 Alcance Orgânico Forte"
+                            description="45.678 visualizações com poucos seguidores indica que o algoritmo está favorecendo o conteúdo. Momento ideal para investir."
+                        />
+                        <InsightBox 
+                            type="info"
+                            title="🎬 Recomendações"
+                            description="Aumentar frequência de publicações para 3-5x por semana. Focar em conteúdo educativo curto (15-30s) e trends relevantes."
+                        />
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Navigation */}
+                        <div className="bg-white rounded-xl shadow-lg p-4 mb-6 sticky top-4 z-10">
+                            <div className="flex flex-wrap gap-2">
+                                {sections.map(section => (
+                                    <button
+                                        key={section.id}
+                                        onClick={() => setActiveSection(section.id)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                                            activeSection === section.id
+                                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg transform scale-105'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {section.icon} {section.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="fade-in">
+                            {activeSection === 'overview' && renderOverview()}
+                            {activeSection === 'instagram' && renderInstagram()}
+                            {activeSection === 'linkedin' && renderLinkedIn()}
+                            {activeSection === 'metaads' && renderMetaAds()}
+                            {activeSection === 'youtube' && renderYouTube()}
+                            {activeSection === 'gmb' && renderGMB()}
+                            {activeSection === 'analytics' && renderAnalytics()}
+                            {activeSection === 'tiktok' && renderTikTok()}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-8 text-center text-gray-600 text-sm">
+                            <p>Dashboard Instituto Evereste | Análise 2025 vs 2024</p>
+                            <p className="mt-1">Período: 01/01/2025 a 25/11/2025</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
